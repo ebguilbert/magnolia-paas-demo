@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+  <modelVersion>4.0.0</modelVersion>
+    
+  <groupId>info.magnolia</groupId>
+    
+  <artifactId>esservices-project</artifactId>
+    
+  <version>1.0-SNAPSHOT</version>
+    
+  <name>esservices-project custom cloud project</name>
+    
+  <description>esservices-project custom cloud project</description>
+    
+  <packaging>pom</packaging>
+    
+  <scm>
+        
+    <connection>scm:git:ssh://</connection>
+        
+    <developerConnection>scm:git:ssh://</developerConnection>
+        
+    <url>https://</url>
+        
+    <tag>HEAD</tag>
+      
+  </scm>
+    
+  <properties>
+        
+    <magnolia.version>6.2.17</magnolia.version>
+      
+  </properties>
+    
+  <dependencyManagement>
+        
+    <dependencies>
+            
+      <!-- DX Core custom cloud dependency management -->
+            
+      <dependency>
+                
+        <groupId>info.magnolia.dx</groupId>
+                
+        <artifactId>magnolia-dx-core-custom-cloud-parent</artifactId>
+                
+        <version>${magnolia.version}</version>
+                
+        <type>pom</type>
+                
+        <scope>import</scope>
+              
+      </dependency>
+          
+    </dependencies>
+      
+  </dependencyManagement>
+  
+  <modules>
+      
+    <module>esservices-project-webapp</module>
+      
+  </modules>
+</project>

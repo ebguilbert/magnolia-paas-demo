@@ -1,0 +1,242 @@
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-body-size: 512m
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "X-Robots-Tag: noindex, nofollow";
+    nginx.ingress.kubernetes.io/default-backend: {{ .Env.DEPLOYMENT }}-magnolia-error-page-svc 
+    nginx.ingress.kubernetes.io/custom-http-errors: "503"
+  hosts:
+    - host: {{ .Env.DEPLOYMENT }}.eu-playground.magnolia-platform.com
+      paths:
+          - path: /
+            instance: public
+          - path: /author
+            instance: author
+  tls:
+    - hosts:
+        - {{ .Env.DEPLOYMENT }}.eu-playground.magnolia-platform.com
+      secretName: {{ .Env.DEPLOYMENT }}.eu-playground.magnolia-platform.com
+service:
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
+    - name: jmx
+      port: 8099
+      protocol: TCP
+      targetPort: 8099
+image:
+  pullSecrets:
+    - name: gitlab
+  pullPolicy: Always
+magnoliaAuthor:
+  replicas: 1
+  restartPolicy: Always
+  redeploy: true
+  contextPath: /author
+  webarchive:
+    repository: {{ .Env.CI_REGISTRY_IMAGE }}/magnolia-webapp
+    tag: {{ .Env.GIT_TAG | quote }}
+  bootstrap:
+    password: "superuser!"
+  activation:
+    useExistingSecret: True
+    secret:
+      name: activation-key
+      key: activation-secret
+  env:
+    - name: instance
+      value: "author"
+    - name: deployment
+      value: {{ .Env.DEPLOYMENT }}
+    - name: magnolia.superuser.enabled
+      value: "true"
+    - name: magnolia.superuser.password
+      value: "superuser!"
+    - name: magnolia.bootstrap.license.owner
+      value: "training@magnolia-cms.com" 
+    - name: magnolia.bootstrap.license.key
+      value: "LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tClZlcnNpb246IEJDUEcgdjEuNTgKCm93SjRuSVZUUzJnVVFSQk5Ob25nUk1Ib1FZbUhIVmx5RUthWG1heEVYVmtKK0NFbnZhZ0hZOVRlbnNyWTdIVDMKcExzblg1Q1FRMUJRRUU4aUl1SWhDa0g4SkVvUVJCQThHRDhJSGxURWl5QUtLbEU4cUNmdDNTRzdHd2g0bXByWAoxZlhlcTZvK3Q3b3BsV3JjZCsvdWpVMlREVkhqMDBlazJNb0NIb2FVQUZlQVg3ei9sdGtycWIwYmlKM3piTS9MCjU3Ym50M2oycmowSDdFNjMwN01HUVNvcXVDcjBkbVc5ck90c3picFp0OWNTUXh4a1FVdE1PZVZCTjhNQkZ5SEYKaURDVkpZSlpNQnhSaWJXNVdUQmxPcEdiUXpuUFlzS1BRMUFGNEJwa0pLa0NCMHcyU0FKT1NBZE5ISTA0Q3B1VQpmbEhHS0ZkYXhzeWtWMG81R29ZMWtpWXQ0TFFDcURqQWtram1ZSVpIQlVjcWg0amdISWdXRWlWc0R2WkZFUkRtCk9CelJsQ2pIRUZZWXRSQ2grY05jQzBSaUZvZXhRdFFJQ3hMZERzT3lCTnE0UXpqV2dpVWdMaUlOcW93NlBtYUcKci9JcGpuQWZwR1BVZ1RROHlLaG5hdGtDS0FGRm5VdTBLQ2l4UjBLc0ZPMm5KQ0Zjb25hSnZrQ0lJS3czVmhJYwpsN0RVMVlML3RZUHFlajBFUlJXZEFBbkxYMWMwTktzUWljZ29qMnFTemVETmRJd2RxazAraTZRWWhOb0luSm80ClF5aVlzTUN2REU0VjZocFpUVG9XWVZKeTZwZWpHaUpUdVI5VWVSVnhXRzFLY29IRVNwZVh5TWNhSjRpSU5HVjAKdEtJOFFhcnVhK2FUQXpPK1NtQ1ZIYWlDNTdxdWRlcFNjNm94MWJDaUpWVitIdzNXeWpXTEQrajdtNmEvUFkvWApUczdPYjh6ZmZ0Vjl2R3RpUC96T2Rhd2E2MU42ZXU3aXRvSGVJME5QRHQ1cWJ1K2VteHAvTy85Ni9kVGx6dys4CnNRdzVjMmpkejltT2R6c1gwaTA3N2h4Vm15K2N6TTlzZU5oemJhRWR4MS85NXdOMDVqQ2Z5NXp1ZS9ueHgzalgKcDJmcFAxL09YMG0zL2JyL0laeXdXOXRucmxJN2ZiT052OGljbmI3K0R6ejZmOXM9Cj1TckJ2Ci0tLS0tRU5EIFBHUCBNRVNTQUdFLS0tLS0K" 
+  catalinaExtraEnv:
+    com.sun.management.jmxremote.port: "8099"
+    com.sun.management.jmxremote.rmi.port: "8099"
+    com.sun.management.jmxremote.authenticate: "false"
+    com.sun.management.jmxremote.ssl: "false"
+    com.sun.management.jmxremote.local.only: "false"
+    java.rmi.server.hostname: "localhost"
+  setenv:
+    memory:
+      maxPercentage: 80
+  resources:
+    requests:
+      memory: 4Gi
+    limits:
+      memory: 4Gi
+  livenessProbe:
+    enabled: true
+    timeoutSeconds: 60
+    path: "/.rest/status"
+  podAnnotations:
+    magnolia.info/is-magnolia: "true"
+  db:
+    persistence:
+      size: "20Gi"
+    backup:
+      enabled: true
+      tag: v0.5.2
+      env:
+        - name: MGNLBACKUP_CMD
+          value: "pg_basebackup"
+        - name: MGNLBACKUP_ARGS
+          value: "--host localhost --user postgres -D /scratch -Fp"
+        - name: MGNLBACKUP_USE_PG_WAL
+          value: "true"
+        - name: MGNLBACKUP_SYNC_DIR
+          value: "/archive"
+        - name: MGNLBACKUP_NO_STDOUT
+          value: "true"
+        - name: MGNLBACKUP_LOGLEVEL
+          value: "debug"
+        - name: MGNLBACKUP_BUCKET
+          value: "eu-playground-backup-bucket"
+        - name: MGNLBACKUP_PREFIX
+          value: {{ .Env.DEPLOYMENT }}/author
+        - name: MGNLBACKUP_HERITAGE
+          value: "magnolia-backup"
+        - name: MGNLBACKUP_CRON
+          value: "@every 720h" # ~1 month.
+        - name: MGNLBACKUP_KEEPDAYS
+          value: "90"
+        - name: MGNLBACKUP_S3_ENDPOINT
+          value: "s3.eu-central-1.amazonaws.com"
+        - name: MGNLBACKUP_S3_REGION
+          value: "eu-central-1"
+        - name: MGNLBACKUP_S3_ACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-backup-key
+              key: accesskey
+        - name: MGNLBACKUP_S3_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-backup-key
+              key: secretkey
+        - name: MGNLBACKUP_TAGS_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MGNLBACKUP_TAGS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MGNLBACKUP_TAGS_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MGNLBACKUP_TAGS_RELEASE
+          value: {{ .Env.DEPLOYMENT }}
+    podAnnotations:
+      magnolia.info/is-magnolia: "true"
+magnoliaPublic:
+  replicas: 1
+  restartPolicy: Always
+  contextPath: /
+  webarchive:
+    repository: {{ .Env.CI_REGISTRY_IMAGE }}/magnolia-webapp
+    tag: {{ .Env.GIT_TAG | quote }}
+  bootstrap:
+    password: "superuser!"
+  activation:
+    useExistingSecret: True
+    secret:
+      name: activation-key
+      key: activation-secret
+  env:
+    - name: instance
+      value: "public"
+    - name: deployment
+      value: {{ .Env.DEPLOYMENT }}
+    - name: magnolia.superuser.enabled
+      value: "true"
+    - name: magnolia.superuser.password
+      value: "superuser!"
+    - name: magnolia.bootstrap.license.owner
+      value: "training@magnolia-cms.com" 
+    - name: magnolia.bootstrap.license.key
+      value: "LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tClZlcnNpb246IEJDUEcgdjEuNTgKCm93SjRuSVZUUzJnVVFSQk5Ob25nUk1Ib1FZbUhIVmx5RUthWG1heEVYVmtKK0NFbnZhZ0hZOVRlbnNyWTdIVDMKcExzblg1Q1FRMUJRRUU4aUl1SWhDa0g4SkVvUVJCQThHRDhJSGxURWl5QUtLbEU4cUNmdDNTRzdHd2g0bXByWAoxZlhlcTZvK3Q3b3BsV3JjZCsvdWpVMlREVkhqMDBlazJNb0NIb2FVQUZlQVg3ei9sdGtycWIwYmlKM3piTS9MCjU3Ym50M2oycmowSDdFNjMwN01HUVNvcXVDcjBkbVc5ck90c3picFp0OWNTUXh4a1FVdE1PZVZCTjhNQkZ5SEYKaURDVkpZSlpNQnhSaWJXNVdUQmxPcEdiUXpuUFlzS1BRMUFGNEJwa0pLa0NCMHcyU0FKT1NBZE5ISTA0Q3B1VQpmbEhHS0ZkYXhzeWtWMG81R29ZMWtpWXQ0TFFDcURqQWtram1ZSVpIQlVjcWg0amdISWdXRWlWc0R2WkZFUkRtCk9CelJsQ2pIRUZZWXRSQ2grY05jQzBSaUZvZXhRdFFJQ3hMZERzT3lCTnE0UXpqV2dpVWdMaUlOcW93NlBtYUcKci9JcGpuQWZwR1BVZ1RROHlLaG5hdGtDS0FGRm5VdTBLQ2l4UjBLc0ZPMm5KQ0Zjb25hSnZrQ0lJS3czVmhJYwpsN0RVMVlML3RZUHFlajBFUlJXZEFBbkxYMWMwTktzUWljZ29qMnFTemVETmRJd2RxazAraTZRWWhOb0luSm80ClF5aVlzTUN2REU0VjZocFpUVG9XWVZKeTZwZWpHaUpUdVI5VWVSVnhXRzFLY29IRVNwZVh5TWNhSjRpSU5HVjAKdEtJOFFhcnVhK2FUQXpPK1NtQ1ZIYWlDNTdxdWRlcFNjNm94MWJDaUpWVitIdzNXeWpXTEQrajdtNmEvUFkvWApUczdPYjh6ZmZ0Vjl2R3RpUC96T2Rhd2E2MU42ZXU3aXRvSGVJME5QRHQ1cWJ1K2VteHAvTy85Ni9kVGx6dys4CnNRdzVjMmpkejltT2R6c1gwaTA3N2h4Vm15K2N6TTlzZU5oemJhRWR4MS85NXdOMDVqQ2Z5NXp1ZS9ueHgzalgKcDJmcFAxL09YMG0zL2JyL0laeXdXOXRucmxJN2ZiT052OGljbmI3K0R6ejZmOXM9Cj1TckJ2Ci0tLS0tRU5EIFBHUCBNRVNTQUdFLS0tLS0K" 
+  setenv:
+    memory:
+      maxPercentage: 80
+  resources:
+    requests:
+      memory: 4Gi
+    limits:
+      memory: 4Gi
+  livenessProbe:
+    enabled: true
+    path: "/.rest/status"
+  podAnnotations:
+    magnolia.info/is-magnolia: "true"
+  db:
+    persistence:
+      size: "20Gi"
+    backup:
+      enabled: true
+      tag: v0.5.2
+      env:
+        - name: MGNLBACKUP_CMD
+          value: "pg_basebackup"
+        - name: MGNLBACKUP_ARGS
+          value: "--host localhost --user postgres -D /scratch -Fp"
+        - name: MGNLBACKUP_USE_PG_WAL
+          value: "true"
+        - name: MGNLBACKUP_SYNC_DIR
+          value: "/archive"
+        - name: MGNLBACKUP_NO_STDOUT
+          value: "true"
+        - name: MGNLBACKUP_LOGLEVEL
+          value: "debug"
+        - name: MGNLBACKUP_BUCKET
+          value: "eu-playground-backup-bucket"
+        - name: MGNLBACKUP_PREFIX
+          value: {{ .Env.DEPLOYMENT }}/public
+        - name: MGNLBACKUP_HERITAGE
+          value: "magnolia-backup"
+        - name: MGNLBACKUP_CRON
+          value: "@every 720h" # ~1 month.
+        - name: MGNLBACKUP_KEEPDAYS
+          value: "90"
+        - name: MGNLBACKUP_S3_ENDPOINT
+          value: "s3.eu-central-1.amazonaws.com"
+        - name: MGNLBACKUP_S3_REGION
+          value: "eu-central-1"
+        - name: MGNLBACKUP_S3_ACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-backup-key
+              key: accesskey
+        - name: MGNLBACKUP_S3_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: s3-backup-key
+              key: secretkey
+        - name: MGNLBACKUP_TAGS_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: MGNLBACKUP_TAGS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: MGNLBACKUP_TAGS_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MGNLBACKUP_TAGS_RELEASE
+          value: {{ .Env.DEPLOYMENT }}
+    podAnnotations:
+      magnolia.info/is-magnolia: "true"

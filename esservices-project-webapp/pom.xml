@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>info.magnolia</groupId>
+    <artifactId>esservices-project</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>esservices-project-webapp</artifactId>
+  <name>esservices-project custom cloud webapp</name>
+  <description>esservices-project custom cloud webapp</description>
+  <packaging>war</packaging>
+  <properties>
+    <contentEditor2Version>2.1</contentEditor2Version>
+  </properties>  
+
+  <dependencies>
+    <!-- Inherits Magnolia DX Core custom cloud webapp  -->
+    <dependency>
+      <groupId>info.magnolia.dx</groupId>
+      <artifactId>magnolia-dx-core-custom-cloud-webapp</artifactId>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.dx</groupId>
+      <artifactId>magnolia-dx-core-custom-cloud-webapp</artifactId>
+      <type>pom</type>
+    </dependency>
+
+    <!-- MTE travel demo modules -->
+    <dependency>
+      <groupId>info.magnolia.demo</groupId>
+      <artifactId>magnolia-travel-demo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.demo</groupId>
+      <artifactId>magnolia-travel-tours</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-demo-personalization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-demo-component-personalization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-demo-marketing-tags</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-demo-multisite</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-demo-content-tags</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.personalization</groupId>
+      <artifactId>magnolia-personalization-samples</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-demo-stories-app</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.eedemo</groupId>
+      <artifactId>magnolia-travel-tours-enterprise</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.privacy</groupId>
+      <artifactId>magnolia-privacy-sample</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.contacts</groupId>
+      <artifactId>magnolia-contacts</artifactId>
+    </dependency>
+  
+    <dependency>
+      <groupId>info.magnolia</groupId>
+      <artifactId>magnolia-link-unfurl</artifactId>
+      <version>${contentEditor2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.block</groupId>
+      <artifactId>magnolia-block-api</artifactId>
+      <version>${contentEditor2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.block</groupId>
+      <artifactId>magnolia-block-templating</artifactId>
+      <version>${contentEditor2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.editor</groupId>
+      <artifactId>magnolia-content-editor</artifactId>
+      <version>${contentEditor2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.editor</groupId>
+      <artifactId>stories-app</artifactId>
+      <version>${contentEditor2Version}</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.editor</groupId>
+      <artifactId>magnolia-content-editor-widgetset-v2</artifactId>
+      <version>${contentEditor2Version}</version>
+    </dependency>    
+
+    <!-- Commenting incubator module -->
+
+    <dependency>
+      <groupId>info.magnolia.commenting</groupId>
+      <artifactId>magnolia-commenting-app</artifactId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.commenting</groupId>
+      <artifactId>magnolia-commenting-rest</artifactId>
+      <version>1.0</version>
+    </dependency>
+    
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <!-- exclude jars copied "physically" from the webapp overlay - so we only get those resolved by Maven's dependency management -->
+          <dependentWarExcludes>WEB-INF/lib/*.jar</dependentWarExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

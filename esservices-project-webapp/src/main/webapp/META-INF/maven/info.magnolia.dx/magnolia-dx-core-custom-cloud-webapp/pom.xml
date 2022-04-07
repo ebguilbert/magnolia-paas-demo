@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd ">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>info.magnolia.dx</groupId>
+    <artifactId>magnolia-dx-core-custom-cloud-parent</artifactId>
+    <version>6.2.16</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>magnolia-dx-core-custom-cloud-webapp</artifactId>
+  <packaging>war</packaging>
+  <name>Magnolia DX Core custom cloud webapp</name>
+
+  <dependencies>
+    <!-- Inherits Magnolia DX Core webapp  -->
+    <dependency>
+      <groupId>info.magnolia.dx</groupId>
+      <artifactId>magnolia-dx-core-webapp</artifactId>
+      <type>war</type>
+      <exclusions>
+        <!-- Exclude the backup function for performance reason -->
+        <exclusion>
+          <groupId>info.magnolia</groupId>
+          <artifactId>magnolia-module-backup</artifactId>
+        </exclusion>
+        <!-- Exclude the result ranker for performance reason -->
+        <exclusion>
+          <groupId>info.magnolia.periscope</groupId>
+          <artifactId>magnolia-periscope-result-ranker</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.dx</groupId>
+      <artifactId>magnolia-dx-core-webapp</artifactId>
+      <type>pom</type>
+      <exclusions>
+        <!-- Exclude the backup function for performance reason -->
+        <exclusion>
+          <groupId>info.magnolia</groupId>
+          <artifactId>magnolia-module-backup</artifactId>
+        </exclusion>
+        <!-- Exclude the result ranker for performance reason -->
+        <exclusion>
+          <groupId>info.magnolia.periscope</groupId>
+          <artifactId>magnolia-periscope-result-ranker</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- PostgreSQL drivers -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+
+    <!-- Custom cloud configuration -->
+    <dependency>
+      <groupId>info.magnolia.dx</groupId>
+      <artifactId>magnolia-dx-core-custom-cloud-config</artifactId>
+    </dependency>
+
+    <!-- Cloud bootstrapper -->
+    <dependency>
+      <groupId>info.magnolia.cloud</groupId>
+      <artifactId>magnolia-cloud-bootstrapper-enterprise</artifactId>
+    </dependency>
+
+    <!-- Instrumentation module -->
+    <dependency>
+      <groupId>info.magnolia.services</groupId>
+      <artifactId>instrumentation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>info.magnolia.services.instrumentation-cloud</groupId>
+      <artifactId>instrumentation-cloud</artifactId>
+    </dependency>
+    
+    <!-- CDN helper -->
+      <dependency>
+        <groupId>info.magnolia.cdn</groupId>
+        <artifactId>magnolia-cdn-helper</artifactId>
+        <version>${cdn-helper.version}</version>
+      </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <!-- exclude jars copied "physically" from the webapp overlay - so we only get those resolved by Maven's dependency management -->
+          <dependentWarExcludes>WEB-INF/lib/*.jar</dependentWarExcludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>${gmaven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>check-for-duplicates</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <providerSelection>1.5</providerSelection>
+              <properties>
+                <libdir>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</libdir>
+              </properties>
+              <source>${project.basedir}/test/check_for_duplicates.groovy</source>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
