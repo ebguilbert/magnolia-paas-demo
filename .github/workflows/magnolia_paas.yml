@@ -20,6 +20,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '11'
+        distribution: 'zulu'        
     - name: Build with Maven
       run: mvn package -s .m2/settings.xml
     - name: Archive Magnolia bundle
@@ -49,6 +50,8 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1          
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v3
@@ -67,4 +70,28 @@ jobs:
           file: ./esservices-project-webapp/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}  
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: ebguilbert/helm-kubectl-gomplate:latest
+    permissions:
+      packages: read
+    needs: push-docker-image
+    env:
+      DEPLOYMENT: esservices-dev
+      LE_ENVIRONMENT: letsencrypt-prod 
+      HELM_CHART_VERSION: v1.5.1
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Kubernetes Context
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - run: kubectl config get-contexts
+      - run: cat values.yml | gomplate > ${DEPLOYMENT}.yml
+      - run: cat ${DEPLOYMENT}.yml
+      - run: helm repo add mironet https://charts.mirohost.ch/
+      - run: helm upgrade -i $DEPLOYMENT mironet/magnolia-helm --version $HELM_CHART_VERSION -f $DEPLOYMENT.yml --create-namespace -n $DEPLOYMENT
