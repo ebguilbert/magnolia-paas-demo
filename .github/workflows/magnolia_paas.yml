@@ -90,7 +90,9 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBECONFIG }}
       - run: kubectl config get-contexts
+      - name: Set GIT_TAG env
+        run: echo "GIT_TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV      
       - run: cat values.yml | gomplate > ${DEPLOYMENT}.yml
       - run: cat ${DEPLOYMENT}.yml
       - run: helm repo add mironet https://charts.mirohost.ch/
-      - run: helm upgrade -i $DEPLOYMENT mironet/magnolia-helm --version $HELM_CHART_VERSION -f $DEPLOYMENT.yml --create-namespace -n $DEPLOYMENT --debug
+      - run: helm upgrade -i $DEPLOYMENT mironet/magnolia-helm --version $HELM_CHART_VERSION -f $DEPLOYMENT.yml --create-namespace -n $DEPLOYMENT
