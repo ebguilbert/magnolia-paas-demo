@@ -76,6 +76,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/ebguilbert/helm-kubectl-gomplate:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}      
     permissions:
       packages: read
     needs: push-docker-image
