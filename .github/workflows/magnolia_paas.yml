@@ -76,12 +76,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/ebguilbert/helm-kubectl-gomplate:latest
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.CONTAINER_TOKEN }}      
-    permissions:
-      packages: read
+      image: registry.gitlab.com/mironet/helm-kubectl-gomplate:v0.0.3
     needs: push-docker-image
     env:
       DEPLOYMENT: esservices-dev
