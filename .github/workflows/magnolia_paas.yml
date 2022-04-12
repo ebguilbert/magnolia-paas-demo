@@ -75,7 +75,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: ${{env.REGISTRY}}/ebguilbert/helm-kubectl-gomplate:latest
+      image: ghcr.io/ebguilbert/helm-kubectl-gomplate:latest
     permissions:
       packages: read
     needs: push-docker-image
