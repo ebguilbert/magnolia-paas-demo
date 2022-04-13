@@ -4,6 +4,8 @@ on:
   push:
     branches: [ main ]
 env:
+  MAVEN_OPTS: "-Dhttps.protocols=TLSv1.2 -Dmaven.repo.local=$GITHUB_WORKSPACE/.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
   MAVEN_USER: ${{ secrets.MAVEN_USER }}
   MAVEN_USER_PWD: ${{ secrets.MAVEN_USER_PWD }}
   REGISTRY: ghcr.io
@@ -23,7 +25,7 @@ jobs:
         distribution: 'zulu'
         cache: maven                
     - name: Build with Maven
-      run: mvn package -s .m2/settings.xml
+      run: mvn ${{ env.MAVEN_CLI_OPTS }} package
     - name: Archive Magnolia bundle
       uses: actions/upload-artifact@v3
       with:
