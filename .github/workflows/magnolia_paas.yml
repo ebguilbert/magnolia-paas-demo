@@ -8,6 +8,7 @@ env:
   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
   MAVEN_USER: ${{ secrets.MAVEN_USER }}
   MAVEN_USER_PWD: ${{ secrets.MAVEN_USER_PWD }}
+  LICENSE_KEY: ${{ secrets.LICENSE_KEY }}
   REGISTRY: ghcr.io
   CI_REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
   GIT_TAG: ""
@@ -40,8 +41,6 @@ jobs:
       packages: write
     needs: build-magnolia
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
       - name: Download bundle artifact
         uses: actions/download-artifact@v3
         with:
