@@ -60,10 +60,6 @@ jobs:
           images: ${{ env.CI_REGISTRY_IMAGE }}/magnolia-webapp
           tags: |
             type=sha,prefix=
-      - name: Set GIT_TAG env
-        run: echo "GIT_TAG=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
-      - name: Log GIT_TAG env
-        run: echo $GIT_TAG
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
