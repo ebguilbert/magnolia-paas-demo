@@ -87,7 +87,6 @@ magnoliaAuthor:
       size: "20Gi"
     backup:
       enabled: true
-      tag: v0.5.2
       env:
         - name: MGNLBACKUP_CMD
           value: "pg_basebackup"
@@ -143,6 +142,8 @@ magnoliaAuthor:
       magnolia.info/is-magnolia: "true"
 magnoliaPublic:
   replicas: 1
+  contentsync:
+    enabled: true
   restartPolicy: Always
   contextPath: /
   webarchive:
@@ -186,7 +187,6 @@ magnoliaPublic:
       size: "20Gi"
     backup:
       enabled: true
-      tag: v0.5.2
       env:
         - name: MGNLBACKUP_CMD
           value: "pg_basebackup"
