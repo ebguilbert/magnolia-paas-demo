@@ -1,0 +1,28 @@
+name: Magnolia Light Modules Pipeline
+
+on:
+  workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    container:
+      image: devspacesh/devspace:5
+    env:
+      KUBECTL_NAMESPACE: esservices-dev
+      LIGHT_MODULES_CONTAINER_PATH: /mgnl-home/modules
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set Kubernetes Context
+        uses: azure/k8s-set-context@v1
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+      - run: kubectl config get-contexts
+      - run: kubectl -n $KUBECTL_NAMESPACE get pods -l "release=$KUBECTL_NAMESPACE,tier=app" -o name | sed 's/^pod\///' > pods.txt     
+      - name: List of pods
+        run: cat pods.txt
+      - run: >
+             for pod in `cat pods.txt`; do
+              devspace sync --local-path light-modules/ --container-path=$LIGHT_MODULES_CONTAINER_PATH -n $KUBECTL_NAMESPACE --pod $pod -c $KUBECTL_NAMESPACE  --initial-sync mirrorLocal --no-watch --upload-only
+             done

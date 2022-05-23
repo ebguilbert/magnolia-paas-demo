@@ -1,0 +1,6 @@
+title: another-page
+templateScript: /custom-lightmodule/templates/pages/another-page.ftl
+renderType: freemarker
+dialog: custom-lightmodule:pages/another-page
+visible: true
+

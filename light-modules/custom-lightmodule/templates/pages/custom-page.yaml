@@ -1,0 +1,6 @@
+title: custom-page
+templateScript: /custom-lightmodule/templates/pages/custom-page.ftl
+renderType: freemarker
+dialog: custom-lightmodule:pages/custom-page
+visible: true
+
