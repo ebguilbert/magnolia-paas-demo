@@ -7,14 +7,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     container:
-      image: devspacesh/devspace:5
+      image: devspacesh/devspace:6
     env:
       KUBECTL_NAMESPACE: esservices-dev
       LIGHT_MODULES_CONTAINER_PATH: /mgnl-home/modules
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set Kubernetes Context
-        uses: azure/k8s-set-context@v1
+        uses: azure/k8s-set-context@v3.1
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBECONFIG }}
@@ -24,5 +24,5 @@ jobs:
         run: cat pods.txt
       - run: >
              for pod in `cat pods.txt`; do
-              devspace sync --local-path light-modules/ --container-path=$LIGHT_MODULES_CONTAINER_PATH -n $KUBECTL_NAMESPACE --pod $pod -c $KUBECTL_NAMESPACE  --initial-sync mirrorLocal --no-watch --upload-only
+              devspace sync --path light-modules/:$LIGHT_MODULES_CONTAINER_PATH -n $KUBECTL_NAMESPACE --pod $pod -c $KUBECTL_NAMESPACE  --initial-sync mirrorLocal --no-watch --upload-only
              done
