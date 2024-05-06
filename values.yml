@@ -55,7 +55,7 @@ magnoliaAuthor:
     - name: magnolia.bootstrap.license.owner
       value: "training@magnolia-cms.com" 
     - name: magnolia.bootstrap.license.key
-      value: {{ .Env.LICENSE_KEY }}
+      value: ${{ secrets.LICENSE_KEY }}
   catalinaExtraEnv:
     com.sun.management.jmxremote.port: "8099"
     com.sun.management.jmxremote.rmi.port: "8099"
@@ -158,7 +158,7 @@ magnoliaPublic:
     - name: magnolia.bootstrap.license.owner
       value: "training@magnolia-cms.com" 
     - name: magnolia.bootstrap.license.key
-      value: {{ .Env.LICENSE_KEY }}
+      value: ${{ secrets.LICENSE_KEY }}
   setenv:
     memory:
       maxPercentage: 80
