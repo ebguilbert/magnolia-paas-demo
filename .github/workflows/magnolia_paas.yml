@@ -78,7 +78,7 @@ jobs:
     env:
       DEPLOYMENT: esservices-dev
       LE_ENVIRONMENT: letsencrypt-prod 
-      HELM_CHART_VERSION: v1.10.0
+      HELM_CHART_VERSION: v1.11.0
     steps:
       - uses: actions/checkout@v4
       - name: Set Kubernetes Context
@@ -92,4 +92,5 @@ jobs:
       - run: cat values.yml | gomplate > ${DEPLOYMENT}.yml
       - run: cat ${DEPLOYMENT}.yml
       - run: helm repo add mironet https://charts.mirohost.ch/
-      - run: helm upgrade -i $DEPLOYMENT mironet/magnolia-helm --version $HELM_CHART_VERSION -f $DEPLOYMENT.yml --create-namespace -n $DEPLOYMENT
+      - run: kubectl create namespace $DEPLOYMENT --dry-run=client -o yaml | kubectl annotate --local -f - field.cattle.io/projectId=`kubectl get namespace default --output="jsonpath={.metadata.annotations.field\.cattle\.io/projectId}"` -o yaml  | kubectl apply -f -
+      - run: helm upgrade -i $DEPLOYMENT mironet/magnolia-helm --version $HELM_CHART_VERSION -f $DEPLOYMENT.yml -n $DEPLOYMENT
