@@ -9,7 +9,7 @@ ingress:
     nginx.ingress.kubernetes.io/default-backend: {{ .Env.DEPLOYMENT }}-magnolia-error-page-svc 
     nginx.ingress.kubernetes.io/custom-http-errors: "503"
   hosts:
-    - host: {{ .Env.DEPLOYMENT }}.eu-playground.magnolia-platform.com
+    - host: {{ .Env.HOST_ENVIRONMENT }}.esservices.magnolia-platform.io
       paths:
           - path: /
             instance: public
@@ -17,8 +17,8 @@ ingress:
             instance: author
   tls:
     - hosts:
-        - {{ .Env.DEPLOYMENT }}.eu-playground.magnolia-platform.com
-      secretName: {{ .Env.DEPLOYMENT }}.eu-playground.magnolia-platform.com
+        - {{ .Env.HOST_ENVIRONMENT }}.esservices.magnolia-platform.io
+      secretName: {{ .Env.HOST_ENVIRONMENT }}.esservices.magnolia-platform.io
 service:
   ports:
     - name: http
@@ -43,11 +43,6 @@ magnoliaAuthor:
     tag: {{ .Env.GIT_TAG | quote }}
   bootstrap:
     password: "superuser!"
-  activation:
-    useExistingSecret: True
-    secret:
-      name: activation-key
-      key: activation-secret
   env:
     - name: instance
       value: "author"
@@ -151,11 +146,6 @@ magnoliaPublic:
     tag: {{ .Env.GIT_TAG | quote }}
   bootstrap:
     password: "superuser!"
-  activation:
-    useExistingSecret: True
-    secret:
-      name: activation-key
-      key: activation-secret
   env:
     - name: instance
       value: "public"

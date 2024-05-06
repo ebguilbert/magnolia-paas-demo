@@ -110,18 +110,38 @@
       <version>${contentEditor2Version}</version>
     </dependency>    
 
-    <!-- Commenting incubator module -->
+    <!-- workflow extended -->
 
     <dependency>
-      <groupId>info.magnolia.commenting</groupId>
-      <artifactId>magnolia-commenting-app</artifactId>
-      <version>1.0</version>
+      <groupId>info.magnolia.workflow</groupId>
+      <artifactId>magnolia-module-workflow-extended-toolbox</artifactId>
+      <version>2.0.1</version>
     </dependency>
+
+    <!-- migration tools -->
     <dependency>
-      <groupId>info.magnolia.commenting</groupId>
-      <artifactId>magnolia-commenting-rest</artifactId>
-      <version>1.0</version>
+      <groupId>info.magnolia.migration</groupId>
+      <artifactId>migration-tools</artifactId>
+      <version>1.0.1</version>
     </dependency>
+
+    <dependency>
+      <groupId>info.magnolia.abtesting</groupId>
+      <artifactId>magnolia-abtesting-ui</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+
+		<dependency>
+			<groupId>info.magnolia.connector.sso</groupId>
+			<artifactId>magnolia-sso-connector</artifactId>
+			<version>2.7.3</version>
+		</dependency>
+ 
+		<dependency>
+			<groupId>info.magnolia.biocryptology</groupId>
+			<artifactId>biocryptology-connector-module</artifactId>
+			<version>1.2</version>
+		</dependency>	    
     
   </dependencies>
 
